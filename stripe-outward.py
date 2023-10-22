@@ -34,7 +34,7 @@ while True:
             data_str = data.decode('utf-8')
             data_dict = json.loads(data_str)
 
-            # customer_id = data_dict.get('id')
+            customer_id = data_dict.get('id')
             # name = data_dict.get('name')
             # email = data_dict.get('email')
             action = data_dict.get('action')
@@ -49,7 +49,8 @@ while True:
                     email = data_dict.get('email')
                     customer = stripe.Customer.create(
                         name=name,
-                        email=email
+                        email=email,
+                        description=customer_id
                     )
                     print(f'Created customer {customer.id} in Stripe')
                 except stripe.error.StripeError as e:
