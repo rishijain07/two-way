@@ -3,13 +3,13 @@ import time
 import pymysql
 
 # Initialize the Stripe API with your API key
-stripe.api_key = 'sk_test_51O41sQSAvARJ57IrqW1ilAFlNOZCne4bHFKHRmru9RgUbN7U3rUNAGuk4pIvqNfc3pzMjMO3VYGWFYnnDKpbDVmE00k9QtjKw5'
+stripe.api_key = 'add_your_sk_key'
 
 # MySQL Database Configuration
 db = pymysql.connect(
     host="localhost",
-    user="rishi",
-    password="#Rishi123",
+    user="your_username",
+    password="your_password",
     database="zenskar",
     cursorclass=pymysql.cursors.DictCursor  # To return results as dictionaries
 )
@@ -26,7 +26,7 @@ while True:
         # Query Stripe for customer updates since the last sync
         customers = stripe.Customer.list(
             created={'gte': last_sync_timestamp},
-            limit=100  # Adjust the limit based on your needs
+            limit=100  
         )
 
         for customer in customers.auto_paging_iter():
