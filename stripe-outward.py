@@ -3,7 +3,7 @@ import json
 import stripe
 
 # Initialize the Stripe API with your API key
-stripe.api_key = 'sk_test_51O41sQSAvARJ57IrqW1ilAFlNOZCne4bHFKHRmru9RgUbN7U3rUNAGuk4pIvqNfc3pzMjMO3VYGWFYnnDKpbDVmE00k9QtjKw5'
+stripe.api_key = 'add_your_sk_key'
 
 # Kafka consumer configuration.
 kafka_consumer_config = {
@@ -39,7 +39,7 @@ while True:
             # email = data_dict.get('email')
             action = data_dict.get('action')
 
-            print(data_dict)
+            # print(data_dict)
 
             # Perform actions based on the data from Kafka
             if action == 'add':
@@ -57,10 +57,6 @@ while True:
                     print('Error creating customer in Stripe:', str(e))
             elif action == 'update':
                 try:
-                    # Find the customer using previous email and name in Stripe
-                    # Note: You would need to implement a mechanism to uniquely identify customers in Stripe.
-                    # This may involve maintaining a mapping of your customer IDs to Stripe customer IDs.
-                    # Here, we assume you can uniquely identify customers in Stripe based on their email and name.
                     prev_data = data_dict.get('prev')
                     updated_data = data_dict.get('updated')
                     customers = stripe.Customer.list(email=prev_data['email'])
