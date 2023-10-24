@@ -7,13 +7,13 @@ import pymysql
 app = Flask(__name__)
 
 # Initialize the Stripe API with your secret API key
-stripe.api_key = 'sk_test_51O41sQSAvARJ57IrqW1ilAFlNOZCne4bHFKHRmru9RgUbN7U3rUNAGuk4pIvqNfc3pzMjMO3VYGWFYnnDKpbDVmE00k9QtjKw5'
+stripe.api_key = 'add_your_secret_key'
 
 # MySQL Database Configuration
 db = pymysql.connect(
     host="localhost",
-    user="rishi",
-    password="#Rishi123",
+    user="user_name",
+    password="your_password",
     database="zenskar",
     cursorclass=pymysql.cursors.DictCursor  # To return results as dictionaries
 )
