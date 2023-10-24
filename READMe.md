@@ -1,4 +1,4 @@
-Sure, here's an updated set-up guide for your Stripe Customer Synchronization system, including instructions on how to run Inward Sync, expose it to Ngrok, and configure it for Stripe Webhooks. Please follow these steps:
+
 
 ## Prerequisites
 
