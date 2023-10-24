@@ -1,15 +1,15 @@
 from flask import Flask, request, jsonify
 import pymysql
 from kafka import KafkaProducer
-import json  # Import the json module
+import json 
 
 app = Flask(__name__)
 
 # MySQL Database Configuration
 db = pymysql.connect(
     host="localhost",
-    user="rishi",
-    password="#Rishi123",
+    user="your_username",
+    password="your_password",
     database="zenskar",
     cursorclass=pymysql.cursors.DictCursor  # To return results as dictionaries
 )
@@ -31,7 +31,7 @@ def update_customer():
         id = data.get('id')
         name = data.get('name')
         email = data.get('email')
-        action = data.get('action')  # 'add' or 'update'
+        action = data.get('action') 
         # print(data)
 
         # Update local MySQL database
@@ -71,7 +71,7 @@ def update_customer():
                     "updated": {"name": name, "email": email},
                     "action": action
                 }
-        print(kafka_message)
+        # print(kafka_message)
         try:
             producer.send('consumer-events', value=kafka_message)
         except Exception as kafka_error:
