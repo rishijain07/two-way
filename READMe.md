@@ -1,128 +1,42 @@
+# Customer Data Sync Application
 
+## Overview
 
-## Prerequisites
+This application is designed to synchronize customer data between a local MySQL database and the Stripe payment platform, using Kafka for event-driven communication. It handles real-time updates from Stripe webhooks, polls for customer data, and ensures consistency across platforms.
 
-Before you begin, ensure you have the following installed on your system:
+## Why I Built This
 
-- Python 3.x
-- Flask
-- Confluent Kafka (Python Client)
-- Stripe API Key
-- MySQL Server
-- pymysql
-- kafka-python
-- Ngrok
-- Apache Kafka 
+I developed this application to deepen my understanding of several key technologies, including Kafka, Stripe webhooks, and real-time data synchronization. This project provided a hands-on approach to learning these concepts while building a functional and practical system.
 
-### Step 1: Install Python Packages
+## Application Details
 
-```bash
-pip install flask confluent-kafka stripe pymysql kafka-python
-```
+### 1. Webhook Handling (`inward-sync.py`)
+- A Flask server listens for Stripe webhooks (e.g., `customer.created`, `customer.updated`).
+- It updates the local MySQL database with the received customer data, ensuring the local database is always in sync with Stripe.
 
-### Step 2: Start Kafka Locally
+### 2. Polling Service (`inward-sync-2.py`)
+- This script continuously polls Stripe for any new or updated customers.
+- It updates the local MySQL database, further ensuring data consistency.
 
-Start Kafka locally. You should have Kafka and Zookeeper running on your machine. You can use the following commands to start them:
+### 3. Customer Update API and Kafka Producer (`outward.py`)
+- Another Flask server provides an API endpoint to manually add or update customer data.
+- Upon processing a request, it updates the MySQL database and produces a Kafka message to the `consumer-events` topic.
 
-```bash
-# Start Zookeeper
-bin/zookeeper-server-start.sh config/zookeeper.properties
+### 4. Kafka Consumer and Stripe Sync (`stripe-outward.py`)
+- A Kafka consumer listens to the `consumer-events` topic for customer-related messages.
+- Depending on the event (`add` or `update`), it interacts with Stripe to create or update customer records, ensuring data in Stripe reflects the latest changes.
 
-# Start Kafka Server
-bin/kafka-server-start.sh config/server.properties
-```
+### Folder Structure
+- `inward-sync.py`: Webhook handling and database sync.
+- `inward-sync-2.py`: Polling service for Stripe customer data.
+- `outward.py`: API for customer updates and Kafka producer.
+- `stripe-outward.py`: Consumes Kafka messages and updates Stripe.
 
-### Step 3: Create Kafka Topic
+## How to Run the Application
 
-Create a Kafka topic called "consumer-events" using the following command:
+For detailed instructions on setting up and running the application, please refer to the `README.md` file located in the application's  directory. This file includes environment setup, dependencies, and step-by-step guidance to get the application running.
 
-```bash
-kafka-topics.sh --create --topic consumer-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-```
+## Open for Improvement
 
-### Step 4: Database Setup
+This application is a learning project and is open to improvements. If you have any ideas for optimizing the process, implementing more efficient data synchronization, or enhancing the overall architecture, feel free to contribute or share your suggestions.
 
-1. Create a MySQL database named `zenskar`.
-
-2. Create a table named `customers` with the following structure:
-
-   ```sql
-   CREATE TABLE customers (
-       id VARCHAR(255) PRIMARY KEY,
-       name VARCHAR(255),
-       email VARCHAR(255)
-   );
-   ```
-
-### Step 5: Ngrok Setup
-
-You need Ngrok to expose your local Flask server to the internet for Stripe Webhooks. Download Ngrok from [https://ngrok.com/download](https://ngrok.com/download) and unzip it.
-
-Start Ngrok to create a public URL for your local server:
-
-```bash
-ngrok http http://127.0.0.1:5002
-```
-
-Ngrok will display a public URL that forwards to your local server (e.g., `https://your-ngrok-subdomain.ngrok.io`). Note this URL; you will use it for configuring the Stripe Webhook.
-
-### Step 6: Configure Inward Sync (Flask with MySQL)
-
-1. Open `inward-sync.py`.
-
-2. Update the following configurations:
-   - Stripe API key (line 13).
-   - MySQL Database configurations (lines 21-26).
-
-3. Start Inward Sync:
-
-```bash
-python inward-sync.py
-```
-
-### Step 7: Configure Stripe Webhook
-
-1. Log in to your Stripe Dashboard.
-
-2. Go to the "Developers" section and click on "Webhooks."
-
-3. Click the "Add endpoint" button.
-
-4. In the "Endpoint URL" field, enter the Ngrok URL you obtained earlier (e.g., `https://your-ngrok-subdomain.ngrok.io/stripe-webhook`).
-
-5. Select the "customer.created" and "customer.updated" events.
-
-6. Click the "Add endpoint" button to save the webhook.
-
-### Step 8: Run Other Services
-
-- Start the Stripe Outward Sync (Kafka Consumer):
-
-```bash
-python stripe-outward-sync.py
-```
-
-- Start the Outward Sync (Flask with Kafka Producer):
-
-```bash
-python outward.py
-```
-
-### Step 9: Running Inward Sync (Alternative)
-
-Inward Sync (Flask with Stripe) provides an alternative script, inward-sync-2.py, that uses a polling mechanism to sync customer data. This script queries Stripe for customer updates at regular intervals.
-
-   - Open inward-sync-2.py.
- 
-   - Update the Stripe API key (line 12).
-
-   - Start Inward Sync (Alternative):
-
-```bash
-
-python inward-sync-2.py
-```
-
-Your Stripe Customer Synchronization system is now set up and running. The Inward Sync listens for Stripe Webhook events, and the Outward Sync allows you to add or update customers through the `/update_customer` endpoint.
-
-Feel free to customize this setup further as needed for your project.
